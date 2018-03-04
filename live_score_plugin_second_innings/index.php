@@ -24,7 +24,6 @@ function wpb_add_score_second_innings_meta_box() {
 			'page'
 		);
 	}
-
 }
 
 add_action ( 'add_meta_boxes', 'wpb_add_score_second_innings_meta_box' );
@@ -42,6 +41,11 @@ function live_score_second_innings_callback( $post ) {
 				<div class="meta-labels">
 					<!-- REFERENCING - https://www.youtube.com/watch?v=waS0gCkuLeM&list=PLIjMj0-5C8TI7Jwell1rTvv5XXyrbKDcy&index=10 - PHP code that checks the database to see if there is a value & if there is display it. [0] means that we are grabbing the most recent value entered in for each input -->
 					<table>
+						<!-- Team Name -->
+						<tr>
+							<td><input id="2-team-name" name="2-team-name" placeholder="Team Name" type="text" maxlength="20" size="25" value="<?php if ( ! empty ( $live_score_second_innings_stored_meta['2-team-name'] ) ) echo esc_attr( $live_score_second_innings_stored_meta['2-team-name'][0]); ?>"></td>
+			            </tr>
+
 						<!-- Batsman 1 -->
 						<tr>
 							<td><input id="2-row-1-name" name="2-row-1-name" placeholder="Batsman 1 Name" type="text" maxlength="20" size="25" value="<?php if ( ! empty ( $live_score_second_innings_stored_meta['2-row-1-name'] ) ) echo esc_attr( $live_score_second_innings_stored_meta['2-row-1-name'][0]); ?>"></td>
@@ -116,6 +120,11 @@ function live_score_second_innings_callback( $post ) {
 							<td><input id="2-row-11-name" name="2-row-11-name" placeholder="Batsman 11 Name" type="text" maxlength="20" size="25" value="<?php if ( ! empty ( $live_score_second_innings_stored_meta['2-row-11-name'] ) ) echo esc_attr( $live_score_second_innings_stored_meta['2-row-11-name'][0]); ?>"></td>
 
 			                <td><input id="2-row-11-score" name="2-row-11-score" placeholder="Score" type="text" size="2" value="<?php if ( ! empty ( $live_score_second_innings_stored_meta['2-row-11-score'] ) ) echo esc_attr( $live_score_second_innings_stored_meta['2-row-11-score'][0]); ?>"></td>
+			            </tr>
+
+			            <!-- Extras -->
+						<tr>
+							<td><input id="2-extras" name="2-extras" placeholder="Extras" type="text" size="5" value="<?php if ( ! empty ( $live_score_second_innings_stored_meta['2-extras'] ) ) echo esc_attr( $live_score_second_innings_stored_meta['2-extras'][0]); ?>"></td>
 			            </tr>
 
 			            <!-- Bowler 1 -->
@@ -224,6 +233,15 @@ function live_score_second_innings_callback( $post ) {
 			            </tr>
 			        </table>
 				</div>
+				<div class="meta-editor"></div>
+				<?php
+				$content = get_post_meta( $post -> ID, 'meta-editor', true );
+				$editor_id = 'meta-editor';
+				$settings = array(
+					'textarea_rows' => 8
+				);
+				wp_editor( $content, $editor_id, $settings );
+				?>
 
 	<?php
 }
@@ -243,6 +261,11 @@ function live_score_second_innings_meta_save( $post_id ) {
 	/* REFERENCING - https://www.youtube.com/watch?v=waS0gCkuLeM&list=PLIjMj0-5C8TI7Jwell1rTvv5XXyrbKDcy&index=10 - If data inside each of these inputs, update post meta updates the data in the database */
 
 	/* sanitize text field - cleans data entered in inputs */
+
+	// Team Name
+	if ( isset( $_POST['2-team-name'] ) ) {
+		update_post_meta( $post_id, '2-team-name', sanitize_text_field($_POST['2-team-name'] ) );
+	}
 
 	// Batsman 1
 	if ( isset( $_POST['2-row-1-name'] ) ) {
@@ -341,6 +364,11 @@ function live_score_second_innings_meta_save( $post_id ) {
 
 	if ( isset( $_POST['2-row-11-score'] ) ) {
 		update_post_meta( $post_id, '2-row-11-score', sanitize_text_field($_POST['2-row-11-score'] ) );
+	}
+
+	// Extras
+	if ( isset( $_POST['2-extras'] ) ) {
+		update_post_meta( $post_id, '2-extras', sanitize_text_field($_POST['2-extras'] ) );
 	}
 
 	// Bowler 1
@@ -517,6 +545,13 @@ function live_score_second_innings_meta_save( $post_id ) {
 
 	if ( isset( $_POST['2-row-7-bowl-economy'] ) ) {
 		update_post_meta( $post_id, '2-row-7-bowl-economy', sanitize_text_field($_POST['2-row-7-bowl-economy'] ) );
+	}
+
+	/* REFERENCING - https://www.youtube.com/watch?v=waS0gCkuLeM&list=PLIjMj0-5C8TI7Jwell1rTvv5XXyrbKDcy&index=10 - Creating the wp_editor for match updates & result */
+
+	// Match Update Text Editor
+	if ( isset( $_POST['meta-editor'] ) ) {
+		update_post_meta( $post_id, 'meta-editor', sanitize_text_field($_POST['meta-editor'] ) );
 	}
 	
 }

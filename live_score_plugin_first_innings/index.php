@@ -24,7 +24,6 @@ function wpb_add_score_first_innings_meta_box() {
 			'page'
 		);
 	}
-
 }
 
 add_action ( 'add_meta_boxes', 'wpb_add_score_first_innings_meta_box' );
@@ -42,6 +41,15 @@ function live_score_first_innings_callback( $post ) {
 				<div class="meta-labels">
 					<!-- REFERENCING - https://www.youtube.com/watch?v=waS0gCkuLeM&list=PLIjMj0-5C8TI7Jwell1rTvv5XXyrbKDcy&index=10 - PHP code that checks the database to see if there is a value & if there is display it. [0] means that we are grabbing the most recent value entered in for each input -->
 					<table>
+						<!-- Team Name -->
+						<tr>
+							<td><input id="1-team-name" name="1-team-name" placeholder="Team Name" type="text" maxlength="20" size="25" value="<?php if ( ! empty ( $live_score_first_innings_stored_meta['1-team-name'] ) ) echo esc_attr( $live_score_first_innings_stored_meta['1-team-name'][0]); ?>"></td>
+			            </tr>
+
+			            <!-- Match Type -->
+						<tr>
+							<td><input id="match-type" name="match-type" placeholder="Match Type" type="text" maxlength="20" size="25" value="<?php if ( ! empty ( $live_score_first_innings_stored_meta['match-type'] ) ) echo esc_attr( $live_score_first_innings_stored_meta['match-type'][0]); ?>"></td>
+			            </tr>
 						<!-- Batsman 1 -->
 						<tr>
 							<td><input id="1-row-1-name" name="1-row-1-name" placeholder="Batsman 1 Name" type="text" maxlength="20" size="25" value="<?php if ( ! empty ( $live_score_first_innings_stored_meta['1-row-1-name'] ) ) echo esc_attr( $live_score_first_innings_stored_meta['1-row-1-name'][0]); ?>"></td>
@@ -116,6 +124,11 @@ function live_score_first_innings_callback( $post ) {
 							<td><input id="1-row-11-name" name="1-row-11-name" placeholder="Batsman 11 Name" type="text" maxlength="20" size="25" value="<?php if ( ! empty ( $live_score_first_innings_stored_meta['1-row-11-name'] ) ) echo esc_attr( $live_score_first_innings_stored_meta['1-row-11-name'][0]); ?>"></td>
 
 			                <td><input id="1-row-11-score" name="1-row-11-score" placeholder="Score" type="text" size="2" value="<?php if ( ! empty ( $live_score_first_innings_stored_meta['1-row-11-score'] ) ) echo esc_attr( $live_score_first_innings_stored_meta['1-row-11-score'][0]); ?>"></td>
+			            </tr>
+
+			            <!-- Extras -->
+			            <tr>
+							<td><input id="1-extras" name="1-extras" placeholder="Extras" type="text" size="5" value="<?php if ( ! empty ( $live_score_first_innings_stored_meta['1-extras'] ) ) echo esc_attr( $live_score_first_innings_stored_meta['1-extras'][0]); ?>"></td>
 			            </tr>
 
 			            <!-- Bowler 1 -->
@@ -244,6 +257,16 @@ function live_score_first_innings_meta_save( $post_id ) {
 
 	/* sanitize text field - cleans data entered in inputs */
 
+	// Team Name
+	if ( isset( $_POST['1-team-name'] ) ) {
+		update_post_meta( $post_id, '1-team-name', sanitize_text_field($_POST['1-team-name'] ) );
+	}
+
+	// Match Type
+	if ( isset( $_POST['match-type'] ) ) {
+		update_post_meta( $post_id, 'match-type', sanitize_text_field($_POST['match-type'] ) );
+	}
+
 	// Batsman 1
 	if ( isset( $_POST['1-row-1-name'] ) ) {
 		update_post_meta( $post_id, '1-row-1-name', sanitize_text_field($_POST['1-row-1-name'] ) );
@@ -341,6 +364,11 @@ function live_score_first_innings_meta_save( $post_id ) {
 
 	if ( isset( $_POST['1-row-11-score'] ) ) {
 		update_post_meta( $post_id, '1-row-11-score', sanitize_text_field($_POST['1-row-11-score'] ) );
+	}
+
+	// Extras
+	if ( isset( $_POST['1-extras'] ) ) {
+		update_post_meta( $post_id, '1-extras', sanitize_text_field($_POST['1-extras'] ) );
 	}
 
 	// Bowler 1
@@ -522,4 +550,8 @@ function live_score_first_innings_meta_save( $post_id ) {
 
 // Creating the add action to save the data entered
 add_action( 'save_post', 'live_score_first_innings_meta_save' );
+
+function add_scores_to_get_total ( $post ) {
+	$first_total = $row_1_score_1 + $row_2_score_1;
+}
 
